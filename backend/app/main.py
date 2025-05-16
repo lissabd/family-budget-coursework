@@ -7,6 +7,7 @@ from sqlalchemy.future import select
 from app.api.auth       import router as auth_router
 from app.api.families   import router as families_router
 from app.api.categories import router as categories_router
+from app.api.transactions import router as transactions_router
 from app.core.database  import get_session
 from app.models.category import Category
 
@@ -30,7 +31,7 @@ app.add_middleware(
 app.include_router(auth_router,       prefix="/api/auth",      tags=["Auth"])
 app.include_router(families_router,   prefix="/api/families",  tags=["Families"])
 app.include_router(categories_router, prefix="/api/categories", tags=["Categories"])
-
+app.include_router(transactions_router, prefix="/api/transactions", tags=["Transactions"]) 
 
 # ------------------
 # заполнение таблицы categories при старте (seed)
