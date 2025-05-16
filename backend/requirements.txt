@@ -1,0 +1,12 @@
+fastapi
+uvicorn
+sqlalchemy
+pymysql
+aiomysql
+alembic
+python-dotenv
+passlib[bcrypt]
+python-jose[cryptography]
+alembic
+pydantic[email]
+pydantic-settings>=2.0.3
