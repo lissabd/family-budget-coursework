@@ -12,11 +12,6 @@ load_dotenv()
 
 DATABASE_URL = settings.DATABASE_URL
 
-# DATABASE_URL = (
-#     f"mysql+aiomysql://{os.getenv('DB_USER')}:{os.getenv('DB_PASSWORD')}"
-#     f"@{os.getenv('DB_HOST')}:{os.getenv('DB_PORT')}/{os.getenv('DB_NAME')}"
-# )
-
 engine = create_async_engine(DATABASE_URL, echo=True)
 async_session = sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
 

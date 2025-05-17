@@ -16,7 +16,6 @@ class FamilyJoin(BaseModel):
 class FamilyRead(FamilyBase):
     id: int
     created_at: datetime
-    # опционально: members_count, transactions_count
     members_count: Optional[int] = None
     transactions_count: Optional[int] = None
 

@@ -36,7 +36,6 @@ async def read_family(
     if not family:
         raise HTTPException(status_code=404, detail="Семья не найдена")
 
-    # Число членов
     members_cnt = (
         await session.execute(
             select(func.count(User.id))
@@ -44,7 +43,6 @@ async def read_family(
         )
     ).scalar_one()
 
-    # Число транзакций
     tx_cnt = (
         await session.execute(
             select(func.count(Transaction.id))
@@ -80,7 +78,7 @@ async def join_family(
     current_user.family_id = family.id
     session.add(current_user)
     await session.commit()
-    # После коммита считаем заново
+
     members_cnt = (
         await session.execute(
             select(func.count(User.id))
@@ -113,7 +111,6 @@ async def join_family(
     current_user: User = Depends(get_current_user),
     session: AsyncSession = Depends(get_session),
 ):
-    # Ищем семью по коду
     q = await session.execute(
         select(Family).where(Family.code == payload.code)
     )
@@ -121,13 +118,11 @@ async def join_family(
     if not family:
         raise HTTPException(status_code=404, detail="Семья не найдена")
 
-    # Меняем family_id у пользователя
     current_user.family_id = family.id
     session.add(current_user)
     await session.commit()
     await session.refresh(family)
 
-    # Подсчёт членов/транзакций как в read_family
     members_cnt = (
         await session.execute(
             select(func.count(User.id)).where(User.family_id == family.id)

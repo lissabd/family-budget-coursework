@@ -25,13 +25,13 @@ from app.models.user import User
 
 from app.core.config import settings
 
-SECRET_KEY = settings.SECRET_KEY  # ✅ получаем из .env через settings
+SECRET_KEY = settings.SECRET_KEY 
 ALGORITHM = settings.ALGORITHM
 ACCESS_TOKEN_EXPIRE_MINUTES = settings.ACCESS_TOKEN_EXPIRE_MINUTES
 
 oauth2_scheme = OAuth2PasswordBearer(
     tokenUrl="/api/auth/login",
-    auto_error=False  # чтобы не ругался, если в заголовке нет Bearer
+    auto_error=False
 )
 
 
