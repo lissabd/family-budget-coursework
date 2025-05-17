@@ -1,61 +1,123 @@
-import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import API from '../../api/axios';
+// src/features/transactions/transactionSlice.ts
+import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
+import API from '../../api/axios'
+import type { TransactionCreate, TransactionRead } from '../../types/transaction'
+import { RootState } from '../../app/types'
 
 
-interface Transaction {
-  id: number;
-  amount: number;
-  type: 'income' | 'expense';
-  category: string;
-  created_at: string;
+export interface CategoryItem {
+  id: number
+  name: string
+  type: 'income' | 'expense'
+}
+
+export interface TransactionItem {
+  id: number
+  amount: number
+  type: 'income' | 'expense'
+  category: string
+  created_at: string
 }
 
 interface TransactionsState {
-  list: Transaction[];
-  status: 'idle' | 'loading' | 'error';
+  list: TransactionItem[]
+  status: 'idle' | 'loading' | 'error'
 }
 
 const initialState: TransactionsState = {
   list: [],
   status: 'idle',
-};
+}
 
-export const fetchRecentTransactions = createAsyncThunk<Transaction[]>(
+export const fetchRecentTransactions = createAsyncThunk<
+  TransactionItem[],
+  void,
+  { state: RootState }
+>(
   'transactions/fetchRecent',
-  async () => {
-    const res = await API.get<Transaction[]>('/transactions?limit=5');
-    return res.data;
+  async (_, { getState }) => {
+    const resp = await API.get<TransactionRead[]>('/transactions?limit=5')
+    const cats: CategoryItem[] = getState().categories.list
+    return resp.data.map(tx => {
+      const found = cats.find(c => c.id === tx.category_id)
+      return {
+        id: tx.id,
+        amount: tx.amount,
+        type: tx.type,
+        category: found?.name ?? '—',
+        created_at: tx.created_at,
+      }
+    })
   }
-);
+)
 
-export const fetchAllTransactions = createAsyncThunk<Transaction[]>(
+export const fetchAllTransactions = createAsyncThunk<
+  TransactionItem[],
+  void,
+  { state: RootState }
+>(
   'transactions/fetchAll',
-  async () => {
-    const res = await API.get<Transaction[]>('/transactions');
-    return res.data;
+  async (_, { getState }) => {
+    const resp = await API.get<TransactionRead[]>('/transactions')
+    const cats: CategoryItem[] = getState().categories.list
+    return resp.data.map(tx => {
+      const found = cats.find(c => c.id === tx.category_id)
+      return {
+        id: tx.id,
+        amount: tx.amount,
+        type: tx.type,
+        category: found?.name ?? '—',
+        created_at: tx.created_at,
+      }
+    })
   }
-);
+)
 
+export const createTransaction = createAsyncThunk<
+  TransactionItem,
+  TransactionCreate,
+  { state: RootState }
+>(
+  'transactions/create',
+  async (payload, { getState }) => {
+    const resp = await API.post<TransactionRead>('/transactions', payload)
+    const tx = resp.data
+    const cats: CategoryItem[] = getState().categories.list
+    const found = cats.find(c => c.id === tx.category_id)
+    return {
+      id: tx.id,
+      amount: tx.amount,
+      type: tx.type,
+      category: found?.name ?? '—',
+      created_at: tx.created_at,
+    }
+  }
+)
 
-const transactionSlice = createSlice({
+const slice = createSlice({
   name: 'transactions',
   initialState,
   reducers: {},
-  extraReducers: (builder) => builder
-    .addCase(fetchRecentTransactions.pending, (state) => { state.status = 'loading'; })
-    .addCase(fetchRecentTransactions.fulfilled, (state, action) => {
-      state.status = 'idle';
-      state.list = action.payload;
-    })
-    .addCase(fetchRecentTransactions.rejected, (state) => {
-      state.status = 'error';
-    })
-    .addCase(fetchAllTransactions.pending, (state) => { state.status = 'loading'; })
-    .addCase(fetchAllTransactions.fulfilled, (state, action) => {
-      state.status = 'idle';
-      state.list = action.payload;
-    })
-    .addCase(fetchAllTransactions.rejected, (state) => { state.status = 'error'; })    
-});
+  extraReducers: builder =>
+    builder
+      .addCase(fetchRecentTransactions.pending, s => { s.status = 'loading' })
+      .addCase(fetchRecentTransactions.fulfilled, (s, { payload }) => {
+        s.status = 'idle'
+        s.list = payload
+      })
+      .addCase(fetchRecentTransactions.rejected, s => { s.status = 'error' })
 
-export default transactionSlice.reducer;
+      .addCase(fetchAllTransactions.pending, s => { s.status = 'loading' })
+      .addCase(fetchAllTransactions.fulfilled, (s, { payload }) => {
+        s.status = 'idle'
+        s.list = payload
+      })
+      .addCase(fetchAllTransactions.rejected, s => { s.status = 'error' })
+
+      .addCase(createTransaction.fulfilled, (s, { payload }) => {
+        s.list.unshift(payload)
+      }),
+})
+
+export default slice.reducer
+export type { TransactionsState }

@@ -44,3 +44,4 @@ const familySlice = createSlice({
 });
 
 export default familySlice.reducer;
+export type {FamilyState}

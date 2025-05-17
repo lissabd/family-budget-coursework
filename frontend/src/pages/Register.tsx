@@ -27,7 +27,15 @@ export default function Register() {
   };
 
   return (
-    <Container maxWidth="xs">
+    <Container
+      maxWidth="xs"
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        minHeight: '100vh'
+      }}
+    >
       <Typography variant="h5" gutterBottom>Регистрация</Typography>
       <form onSubmit={handleSubmit}>
         <TextField

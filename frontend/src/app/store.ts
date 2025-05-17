@@ -1,18 +1,8 @@
-// src/app/store.ts
-import { configureStore } from '@reduxjs/toolkit';
-import authReducer from './../features/auth/authSlice'
-import transactionReducer from './../features/transactions/transactionSlice'
-import familyReducer from '../features/family/familySlice';
-
+import { configureStore } from '@reduxjs/toolkit'
+import { rootReducer } from './rootReducer'
 
 export const store = configureStore({
-  reducer: {
-    auth: authReducer,
-    transactions: transactionReducer,
-    family: familyReducer,
-  },
-});
+  reducer: rootReducer,
+})
 
-
-export type RootState   = ReturnType<typeof store.getState>;
-export type AppDispatch = typeof store.dispatch;
+export type AppDispatch = typeof store.dispatch

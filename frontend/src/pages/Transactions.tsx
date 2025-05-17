@@ -1,26 +1,23 @@
-import { useEffect } from 'react';
-
-import { fetchAllTransactions } from '../features/transactions/transactionSlice';
-import {
-  Container, Typography, Table, TableHead, TableRow, TableCell,
-  TableBody, Button
-} from '@mui/material';
-import { useNavigate } from 'react-router-dom';
-import { useAppDispatch, useAppSelector } from '../app/hooks';
+import { useEffect } from 'react'
+import { Container, Typography, Table, TableHead, TableRow, TableCell, TableBody, Button } from '@mui/material'
+import { useNavigate } from 'react-router-dom'
+import { useAppDispatch, useAppSelector } from '../app/hooks'
+import { fetchAllTransactions } from '../features/transactions/transactionSlice'
+import type { TransactionItem } from '../features/transactions/transactionSlice'
 
 export default function Transactions() {
-  const dispatch = useAppDispatch();
-  const navigate = useNavigate();
-  const { list: transactions, status } = useAppSelector((state) => state.transactions);
+  const dispatch = useAppDispatch()
+  const navigate = useNavigate()
+  const { list: transactions, status } = useAppSelector(s => s.transactions)
 
   useEffect(() => {
-    dispatch(fetchAllTransactions());
-  }, [dispatch]);
+    dispatch(fetchAllTransactions())
+  }, [dispatch])
 
   return (
     <Container>
       <Typography variant="h4" gutterBottom>Все транзакции</Typography>
-      <Button variant="contained" sx={{ mb: 2 }} onClick={() => navigate('/transaction/new')}>
+      <Button sx={{ mb: 2 }} variant="contained" onClick={() => navigate('/transaction/new')}>
         Создать транзакцию
       </Button>
 
@@ -37,7 +34,7 @@ export default function Transactions() {
           </TableRow>
         </TableHead>
         <TableBody>
-          {transactions.map((tx) => (
+          {(transactions as TransactionItem[]).map(tx => (
             <TableRow key={tx.id}>
               <TableCell>{new Date(tx.created_at).toLocaleDateString()}</TableCell>
               <TableCell>{tx.category}</TableCell>
@@ -48,5 +45,5 @@ export default function Transactions() {
         </TableBody>
       </Table>
     </Container>
-  );
+  )
 }

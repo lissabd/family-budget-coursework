@@ -12,6 +12,13 @@ from app.schemas.family import FamilyRead, FamilyJoin
 
 router = APIRouter()
 
+@router.get("/me", response_model=FamilyRead, summary="Информация о своей семье")
+async def read_my_family(
+    current_user: User = Depends(get_current_user),
+    session: AsyncSession = Depends(get_session),
+):
+    return await read_family(current_user.family_id, current_user, session)
+
 @router.get(
     "/{family_id}",
     response_model=FamilyRead,

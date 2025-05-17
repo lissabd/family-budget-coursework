@@ -1,14 +1,16 @@
 import { useEffect } from 'react';
-
 import { fetchFamily } from '../features/family/familySlice';
-import { fetchRecentTransactions } from '../features/transactions/transactionSlice';
-import { Container, Typography, Card, CardContent, List, ListItem, ListItemText } from '@mui/material';
+import { fetchRecentTransactions, TransactionItem } from '../features/transactions/transactionSlice';
+import {
+  Container, Typography, Card,
+  CardContent, List, ListItem, ListItemText
+} from '@mui/material';
 import { useAppDispatch, useAppSelector } from '../app/hooks';
 
 export default function Dashboard() {
   const dispatch = useAppDispatch();
-  const { data: family } = useAppSelector((state) => state.family);
-  const { list: transactions } = useAppSelector((state) => state.transactions);
+  const family = useAppSelector(s => s.family.data);
+  const transactions = useAppSelector(s => s.transactions.list);
 
   useEffect(() => {
     dispatch(fetchFamily());
@@ -30,7 +32,7 @@ export default function Dashboard() {
 
       <Typography variant="h6" gutterBottom>Последние транзакции:</Typography>
       <List>
-        {transactions.map((tx) => (
+        {transactions.map((tx: TransactionItem) => (
           <ListItem key={tx.id}>
             <ListItemText
               primary={`${tx.amount} ₽ • ${tx.category}`}

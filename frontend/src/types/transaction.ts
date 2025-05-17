@@ -6,7 +6,10 @@ export interface TransactionBase {
   description?: string;
 }
 
-export interface TransactionCreate extends TransactionBase {}
+export interface TransactionCreate extends TransactionBase {
+  type: 'income' | 'expense';
+  created_at: string; // ISO-date string
+}
 
 export interface TransactionUpdate extends Partial<TransactionBase> {}
 
@@ -17,6 +20,7 @@ export interface CategoryRead {
 }
 
 export interface TransactionRead extends TransactionBase {
+  type: "income" | "expense";
   id: number;
   user_id: number;
   created_at: string;      // ISO-date string

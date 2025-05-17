@@ -23,7 +23,15 @@ export default function Login() {
   };
 
   return (
-    <Container maxWidth="xs">
+    <Container
+      maxWidth="xs"
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        minHeight: '100vh'
+      }}
+    >
       <Typography variant="h5" gutterBottom>Вход</Typography>
       <form onSubmit={handleSubmit}>
         <TextField
