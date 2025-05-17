@@ -1,65 +1,46 @@
-// src/features/auth/authSlice.ts
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { UserCreate, UserRead } from '../../types/auth';
-import { fetchCurrentUser, login, logout, register } from '../../api/auth';
+import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 
+import { UserRead, LoginData, RegisterData } from '../../types/auth';
+import API from '../../api/axios';
 
 interface AuthState {
   user: UserRead | null;
-  status: 'idle' | 'loading' | 'failed';
-  error: string | null;
+  status: 'idle' | 'loading' | 'error';
 }
 
 const initialState: AuthState = {
   user: null,
   status: 'idle',
-  error: null,
 };
 
-export const registerUser = createAsyncThunk(
-  'auth/register',
-  async (data: UserCreate, { rejectWithValue }) => {
-    try {
-      const user = await register(data);
-      return user;
-    } catch (err: any) {
-      return rejectWithValue(err.response?.data?.detail || err.message);
-    }
-  }
-);
-
-export const loginUser = createAsyncThunk(
+export const login = createAsyncThunk<UserRead, LoginData>(
   'auth/login',
-  async (
-    data: { email: string; password: string },
-    { rejectWithValue }
-  ) => {
-    try {
-      await login(data);
-      const user = await fetchCurrentUser();
-      return user;
-    } catch (err: any) {
-      return rejectWithValue(err.response?.data?.detail || err.message);
-    }
+  async (data) => {
+    const resp = await API.post<UserRead>('/auth/login', data);
+    return resp.data;
   }
 );
 
-export const loadCurrentUser = createAsyncThunk(
-  'auth/loadCurrent',
-  async (_, { rejectWithValue }) => {
-    try {
-      const user = await fetchCurrentUser();
-      return user;
-    } catch (err: any) {
-      return rejectWithValue(null);
-    }
+export const register = createAsyncThunk<UserRead, RegisterData>(
+  'auth/register',
+  async (data) => {
+    const resp = await API.post<UserRead>('/auth/register', data);
+    return resp.data;
   }
 );
 
-export const logoutUser = createAsyncThunk(
+export const logout = createAsyncThunk<void>(
   'auth/logout',
   async () => {
-    await logout();
+    await API.post('/auth/logout');
+  }
+);
+
+export const fetchMe = createAsyncThunk<UserRead>(
+  'auth/fetchMe',
+  async () => {
+    const resp = await API.get<UserRead>('/auth/me');
+    return resp.data;
   }
 );
 
@@ -67,29 +48,25 @@ const authSlice = createSlice({
   name: 'auth',
   initialState,
   reducers: {},
-  extraReducers: (builder) => {
-    builder
-      .addCase(registerUser.pending, (state) => { state.status = 'loading'; state.error = null; })
-      .addCase(registerUser.fulfilled, (state, { payload }) => {
-        state.status = 'idle'; state.user = payload;
-      })
-      .addCase(registerUser.rejected, (state, { payload }) => {
-        state.status = 'failed'; state.error = payload as string;
-      })
-      .addCase(loginUser.pending, (state) => { state.status = 'loading'; state.error = null; })
-      .addCase(loginUser.fulfilled, (state, { payload }) => {
-        state.status = 'idle'; state.user = payload;
-      })
-      .addCase(loginUser.rejected, (state, { payload }) => {
-        state.status = 'failed'; state.error = payload as string;
-      })
-      .addCase(loadCurrentUser.fulfilled, (state, { payload }) => {
-        state.user = payload;
-      })
-      .addCase(logoutUser.fulfilled, (state) => {
-        state.user = null;
-      });
-  },
+  extraReducers: (builder) => builder
+    .addCase(fetchMe.pending, (s) => { s.status = 'loading'; })
+    .addCase(fetchMe.fulfilled, (s, a) => {
+      s.status = 'idle';
+      s.user = a.payload;
+    })
+    .addCase(fetchMe.rejected, (s) => {
+      s.status = 'error';
+      s.user = null;
+    })
+    .addCase(login.fulfilled, (s, a) => {
+      s.user = a.payload;
+    })
+    .addCase(register.fulfilled, (s, a) => {
+      s.user = a.payload;
+    })
+    .addCase(logout.fulfilled, (s) => {
+      s.user = null;
+    }),
 });
 
 export default authSlice.reducer;

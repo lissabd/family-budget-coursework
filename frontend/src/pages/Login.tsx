@@ -1,44 +1,41 @@
-// src/pages/Login.tsx
-import React, { useState } from 'react';
-import { Container, TextField, Button, Typography, Alert } from '@mui/material';
+import { useState } from 'react';
+import { TextField, Button, Container, Typography } from '@mui/material';
 
-import { Navigate, Link } from 'react-router-dom';
-import { useAppDispatch, useAppSelector } from '../app/hooks';
-import { loginUser } from '../features/auth/authSlice';
+import { login } from '../features/auth/authSlice';
+import { Link, useNavigate } from 'react-router-dom';
+import { useAppDispatch } from '../app/hooks';
 
 export default function Login() {
   const dispatch = useAppDispatch();
-  const { user, status, error } = useAppSelector(s => s.auth);
+  const navigate = useNavigate();
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  if (user) return <Navigate to="/" replace />;
-
-  const onSubmit = () => {
-    dispatch(loginUser({ email, password }));
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      await dispatch(login({ email, password })).unwrap();
+      navigate('/dashboard');
+    } catch {
+      alert('Неверный email или пароль');
+    }
   };
 
   return (
-    <Container maxWidth="xs" sx={{ mt: 4 }}>
+    <Container maxWidth="xs">
       <Typography variant="h5" gutterBottom>Вход</Typography>
-      {error && <Alert severity="error">{error}</Alert>}
-      <TextField
-        label="Email"
-        fullWidth margin="normal"
-        value={email} onChange={e => setEmail(e.target.value)}
-      />
-      <TextField
-        label="Пароль"
-        type="password" fullWidth margin="normal"
-        value={password} onChange={e => setPassword(e.target.value)}
-      />
-      <Button
-        variant="contained" fullWidth sx={{ mt: 2 }}
-        onClick={onSubmit} disabled={status === 'loading'}
-      >
-        {status === 'loading' ? 'Загрузка…' : 'Войти'}
-      </Button>
+      <form onSubmit={handleSubmit}>
+        <TextField
+          label="Email" fullWidth margin="normal" value={email}
+          onChange={(e) => setEmail(e.target.value)} />
+        <TextField
+          label="Пароль" fullWidth margin="normal" type="password"
+          value={password} onChange={(e) => setPassword(e.target.value)} />
+        <Button type="submit" variant="contained" fullWidth sx={{ mt: 2 }}>
+          Войти
+        </Button>
+      </form>
       <Typography variant="body2" sx={{ mt: 2 }}>
         Нет аккаунта? <Link to="/register">Зарегистрироваться</Link>
       </Typography>
