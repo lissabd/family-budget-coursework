@@ -9,7 +9,7 @@ class Transaction(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
-    family_id = Column(Integer, ForeignKey("families.id"), nullable=False)  # 🔥 добавлено
+    family_id = Column(Integer, ForeignKey("families.id"), nullable=False)
     category_id = Column(Integer, ForeignKey("categories.id"), nullable=False)
     amount = Column(Numeric(10, 2), nullable=False)
     description = Column(Text, nullable=True)
