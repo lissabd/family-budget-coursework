@@ -33,13 +33,13 @@ const familySlice = createSlice({
   initialState,
   reducers: {},
   extraReducers: (builder) => builder
-    .addCase(fetchFamily.pending, (s) => { s.status = 'loading'; })
-    .addCase(fetchFamily.fulfilled, (s, a) => {
-      s.status = 'idle';
-      s.data = a.payload;
+    .addCase(fetchFamily.pending, (state) => { state.status = 'loading'; })
+    .addCase(fetchFamily.fulfilled, (state, action) => {
+      state.status = 'idle';
+      state.data = action.payload;
     })
-    .addCase(fetchFamily.rejected, (s) => {
-      s.status = 'error';
+    .addCase(fetchFamily.rejected, (state) => {
+      state.status = 'error';
     }),
 });
 

@@ -28,19 +28,34 @@ export const fetchRecentTransactions = createAsyncThunk<Transaction[]>(
   }
 );
 
+export const fetchAllTransactions = createAsyncThunk<Transaction[]>(
+  'transactions/fetchAll',
+  async () => {
+    const res = await API.get<Transaction[]>('/transactions');
+    return res.data;
+  }
+);
+
+
 const transactionSlice = createSlice({
   name: 'transactions',
   initialState,
   reducers: {},
   extraReducers: (builder) => builder
-    .addCase(fetchRecentTransactions.pending, (s) => { s.status = 'loading'; })
-    .addCase(fetchRecentTransactions.fulfilled, (s, a) => {
-      s.status = 'idle';
-      s.list = a.payload;
+    .addCase(fetchRecentTransactions.pending, (state) => { state.status = 'loading'; })
+    .addCase(fetchRecentTransactions.fulfilled, (state, action) => {
+      state.status = 'idle';
+      state.list = action.payload;
     })
-    .addCase(fetchRecentTransactions.rejected, (s) => {
-      s.status = 'error';
-    }),
+    .addCase(fetchRecentTransactions.rejected, (state) => {
+      state.status = 'error';
+    })
+    .addCase(fetchAllTransactions.pending, (state) => { state.status = 'loading'; })
+    .addCase(fetchAllTransactions.fulfilled, (state, action) => {
+      state.status = 'idle';
+      state.list = action.payload;
+    })
+    .addCase(fetchAllTransactions.rejected, (state) => { state.status = 'error'; })    
 });
 
 export default transactionSlice.reducer;

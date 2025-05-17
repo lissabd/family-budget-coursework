@@ -49,23 +49,23 @@ const authSlice = createSlice({
   initialState,
   reducers: {},
   extraReducers: (builder) => builder
-    .addCase(fetchMe.pending, (s) => { s.status = 'loading'; })
-    .addCase(fetchMe.fulfilled, (s, a) => {
-      s.status = 'idle';
-      s.user = a.payload;
+    .addCase(fetchMe.pending, (state) => { state.status = 'loading'; })
+    .addCase(fetchMe.fulfilled, (state, action) => {
+      state.status = 'idle';
+      state.user = action.payload;
     })
-    .addCase(fetchMe.rejected, (s) => {
-      s.status = 'error';
-      s.user = null;
+    .addCase(fetchMe.rejected, (state) => {
+      state.status = 'error';
+      state.user = null;
     })
-    .addCase(login.fulfilled, (s, a) => {
-      s.user = a.payload;
+    .addCase(login.fulfilled, (state, action) => {
+      state.user = action.payload;
     })
-    .addCase(register.fulfilled, (s, a) => {
-      s.user = a.payload;
+    .addCase(register.fulfilled, (state, action) => {
+      state.user = action.payload;
     })
-    .addCase(logout.fulfilled, (s) => {
-      s.user = null;
+    .addCase(logout.fulfilled, (state) => {
+      state.user = null;
     }),
 });
 

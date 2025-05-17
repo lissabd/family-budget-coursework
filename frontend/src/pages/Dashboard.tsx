@@ -7,8 +7,8 @@ import { useAppDispatch, useAppSelector } from '../app/hooks';
 
 export default function Dashboard() {
   const dispatch = useAppDispatch();
-  const { data: family } = useAppSelector((s) => s.family);
-  const { list: transactions } = useAppSelector((s) => s.transactions);
+  const { data: family } = useAppSelector((state) => state.family);
+  const { list: transactions } = useAppSelector((state) => state.transactions);
 
   useEffect(() => {
     dispatch(fetchFamily());
